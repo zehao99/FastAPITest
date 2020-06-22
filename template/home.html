@@ -1,0 +1,104 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<script>
+    $(document).ready(function(){
+        $("#add-stocks").click(function() {
+            $('.ui.modal')
+            .modal('show')
+        });
+    $("#save").click(function() {
+        var symbols = $("#symbols").val();
+        console.log(symbols);
+
+        var stockSymbols = symbols.split("\n");
+        
+        console.log(stockSymbols);
+        for (var i = 0; i < stockSymbols.length; ++i){
+            console.log(stockSymbols[i]);
+            
+            // make request to back-end
+            $.ajax({
+                url: '/stock',
+                type: 'POST',
+                contentType:'application/json',
+                data: JSON.stringify({"symbol": stockSymbols[i]}),
+                dataType: 'json'
+            })
+        }
+
+        $('.ui.model').modal('hide');
+    })
+    });
+</script>
+
+<form>
+<!-- submit form -->
+<div class="ui input">
+    <input name="forward_pe" type="text" placeholder="P/E ratio" value=" {{ forward_pe }}">
+  </div>
+
+  <div class="ui input">
+    <input name="dividend_yield" type="text" placeholder="Dividend and Yield">
+  </div>
+
+  <div class="ui checkbox">
+    <input name="ma50" type="checkbox" name="example">
+    <label>Above 50 day MA</label>
+  </div>
+
+  <div class="ui checkbox">
+    <input name="ma200" type="checkbox" name="example">
+    <label>Above 200 day MA</label>
+  </div>
+
+
+    <button type="submit" class="ui button primary">Filter</button>
+</form>
+
+<div>
+    <button id="add-stocks" class="ui button primary">Add Stocks</button>
+</div>
+<table class="ui celled table">
+    <thead>
+      <tr><th>Symbol</th>
+      <th>P/E</th>
+      <th>MA200</th>
+      <th>MA50</th>
+    </tr></thead>
+    <tbody>
+        {% for stock in stocks %}
+      <tr>
+        <td>{{stock.symbol}}</td>
+        <td>{{stock.forward_pe}}</td>
+        <td>{{stock.ma200}}</td>
+        <td>{{stock.ma50}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="ui modal">
+    <i class="close icon"></i>
+    <div class="header">
+      Stock Symbol
+    </div>
+    <div class="content">
+                
+        <div class="ui form">
+            <div class="field">
+            <label>Enter Stock Symbols</label>
+            <textarea id="symbols"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="actions">
+      <div id="save" class="ui positive right labeled icon button">
+        Add Symbols
+        <i class="plus icon"></i>
+      </div>
+    </div>
+  </div>
+  
+
+{% endblock %}
